@@ -20,5 +20,13 @@
     "nodemon": "^2.0.22"
   },
   "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AditiSharma00/back.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AditiSharma00/back/issues"
+  },
+  "homepage": "https://github.com/AditiSharma00/back#readme",
   "description": ""
 }
