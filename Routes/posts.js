@@ -4,7 +4,7 @@ const verify = require("../middleware/privateRoute");
 //post Model
 const Posts = require("../Model/Posts");
 //routes for get api
-router.get("/", verify, async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const post = await Posts.find();
     if (!post) throw Error("no items");
