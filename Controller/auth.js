@@ -9,18 +9,21 @@ dotenv.config();
 //function to generate access token
 function generateAccessToken(userId) {
   return jwt.sign({ _id: userId }, process.env.TOKEN_SECRET, {
-    expiresIn: "15m",
+    expiresIn: "50m",
   });
 }
 // Registration
-router.post("/register", async (req, res) => {
+const Register = async (req, res) => {
   // Validate the data
   const { error } = registerValidation(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  if (error)
+    return res
+      .status(400)
+      .send({ msg: "Password should be string and of min 6 characters" });
 
   // Check if the user already exists
   const emailExists = await User.findOne({ email: req.body.email });
-  if (emailExists) return res.status(400).send("Email already exists");
+  if (emailExists) return res.status(400).send({ msg: "Email already exists" });
 
   // Hash password
   const salt = await bcrypt.genSalt(10);
@@ -35,35 +38,36 @@ router.post("/register", async (req, res) => {
 
   try {
     const savedUser = await user.save();
-    res.send({ user: user._id });
+    res.send({ user: user._id, msg: "Registration successful" });
   } catch (err) {
-    res.status(400).send(err);
+    res.status(400).send({ msg: "Something went wrong, Try Again" });
   }
-});
+};
 
 // Login
-router.post("/login", async (req, res) => {
+const Login = async (req, res) => {
   // Validate the data
   const { error } = loginValidation(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  if (error) return res.status(400).send({ msg: "wrong credentials", error });
 
   // Check if email exists
   const user = await User.findOne({ email: req.body.email });
-  if (!user) return res.status(400).send("Email doesn't exist");
+  if (!user) return res.status(400).send({ msg: "Email doesn't exist" });
 
   // Check if password is correct
   const validPass = await bcrypt.compare(req.body.password, user.password);
-  if (!validPass) return res.status(400).send("Email or password is wrong!");
+  if (!validPass)
+    return res.status(400).send({ msg: "Email or password is wrong!" });
 
   // Create and assign an access token
   const accessToken = generateAccessToken(user._id);
   const refreshToken = generateRefreshToken(user._id);
 
-  res.json({ accessToken, refreshToken });
-});
+  res.json({ accessToken, refreshToken, msg: "Login successful" });
+};
 
 // Refresh Token
-router.post("/refresh-token", async (req, res) => {
+const RefreshToken =  async (req, res) => {
   const refreshToken = req.body.refreshToken;
 
   // Check if the refresh token is valid
@@ -77,11 +81,11 @@ router.post("/refresh-token", async (req, res) => {
   } catch (err) {
     res.status(401).send("Invalid refresh token");
   }
-});
+};
 
 // Helper function to generate a refresh token
 function generateRefreshToken(userId) {
   return jwt.sign({ _id: userId }, process.env.REFRESH_TOKEN_SECRET);
 }
 
-module.exports = router;
+module.exports = {Register,Login,RefreshToken};

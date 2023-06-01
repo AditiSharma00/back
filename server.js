@@ -11,12 +11,12 @@ mongoose
   .connect(process.env.MONGO_URL)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log(err));
+  app.use(express.json());
 
 //Import Routes
-const authRoute = require("./Routes/auth");
-const postRoute = require("./Routes/posts");
+const authRoute = require("./Routes/AuthRoutes");
+const postRoute = require("./Routes/PostRoutes");
 //Route MiddleWare
-app.use(express.json());
 
 app.use("/api/user", authRoute);
 app.use("/api/posts", postRoute);

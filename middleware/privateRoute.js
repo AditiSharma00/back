@@ -17,7 +17,10 @@ module.exports = function (req, res, next) {
       if (!refreshToken) return res.status(401).send("Access Denied");
 
       try {
-        const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+        const decoded = jwt.verify(
+          refreshToken,
+          process.env.REFRESH_TOKEN_SECRET
+        );
         const newAccessToken = generateAccessToken(decoded._id);
 
         res.setHeader("auth-token", newAccessToken);
@@ -35,6 +38,6 @@ module.exports = function (req, res, next) {
 // Helper function to generate an access token
 function generateAccessToken(userId) {
   return jwt.sign({ _id: userId }, process.env.TOKEN_SECRET, {
-    expiresIn: "15m",
+    expiresIn: "50m",
   });
 }
